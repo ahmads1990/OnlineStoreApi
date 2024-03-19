@@ -40,7 +40,7 @@ namespace OnlineStoreApi.Services
         public async Task<Product?> UpdateProductAsync(Product product)
         {
             // Check if entryDto is null or seller id is null or product has null values then throw exception 
-            if (product is null || string.IsNullOrEmpty(product.Name))
+            if (product is null || product.ProductId <= 0 || string.IsNullOrEmpty(product.Name))
                 throw new ArgumentException("Invalid/Empty entity data");
             if (product.MinimumQuantity <= 0)
                 throw new ArgumentException("Invalid entity data, Minimum Quantity >= 1");
@@ -68,7 +68,7 @@ namespace OnlineStoreApi.Services
         {
             // Check for valid product id (positive number) and seller id (non null/empty string)
             if (productId <= 0)
-                return null;
+                throw new ArgumentException("Invalid/Empty entity id");
 
             // Chech the product exists in database
             var productToBeDeleted = await GetProductByIdAsync(productId);
@@ -80,6 +80,6 @@ namespace OnlineStoreApi.Services
 
             // Return product if necessary
             return productToBeDeleted;
-        }  
+        }
     }
 }

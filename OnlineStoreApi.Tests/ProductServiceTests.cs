@@ -174,5 +174,101 @@ namespace OnlineStoreApi.Tests
 
             Assert.That(exception, Is.TypeOf<ArgumentException>());
         }
+        // UpdateProductAsync
+        [Test]
+        public async Task UpdateProductAsync_ValidProduct_ValidProduct()
+        {
+            // Arrange
+            var updatedProduct = new Product { ProductId = 1, Name = "Product6", MinimumQuantity = 3, Price = 130, Category = "C6", DiscountRate = 15, ProductImagePath = "notEmpty" };
+            // Act
+            var result = await _productService.UpdateProductAsync(updatedProduct);
+            // Assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Name, Is.EqualTo(updatedProduct.Name));
+            Assert.That(result.ProductId, Is.EqualTo(updatedProduct.ProductId));
+        }
+        [Test]
+        public void UpdateProductAsync_InvalidId_Throw()
+        {
+            // Arrange
+            var updatedProduct = new Product { ProductId = -1, Name = "Product6", MinimumQuantity = 3, Price = 130, Category = "C6", DiscountRate = 15, ProductImagePath = "notEmpty" };
+            // Act
+            var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
+                await _productService.UpdateProductAsync(updatedProduct));
+
+            Assert.That(exception, Is.TypeOf<ArgumentException>());
+        }
+        [Test]
+        public void UpdateProductAsync_InvalidName_Throw()
+        {
+            // Arrange
+            var updatedProduct = new Product { ProductId = 1, Name = "", MinimumQuantity = 3, Price = 130, Category = "C6", DiscountRate = 15, ProductImagePath = "notEmpty" };
+            // Act
+            var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
+            await _productService.UpdateProductAsync(updatedProduct));
+
+            Assert.That(exception, Is.TypeOf<ArgumentException>());
+        }
+        [Test]
+        public void UpdateProductAsync_InvalidMinimumQuantity_Throw()
+        {
+            // Arrange
+            var updatedProduct = new Product { ProductId = 1, Name = "Product6", MinimumQuantity = 0, Price = 130, Category = "C6", DiscountRate = 15, ProductImagePath = "notEmpty" };
+            // Act
+            var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
+            await _productService.UpdateProductAsync(updatedProduct));
+
+            Assert.That(exception, Is.TypeOf<ArgumentException>());
+        }
+        //[Test]
+        //public void UpdateProductAsync_InvalidPrice_Throw()
+        //{
+        //    // Arrange
+        //    var updatedProduct = new Product { ProductId = 1, Name = "Product6", MinimumQuantity = 3, Price = 0, Category = "C6", DiscountRate = 15, ProductImagePath = "notEmpty" };
+        //    // Act
+        //    var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
+        //    await _productService.UpdateProductAsync(updatedProduct));
+
+        //    Assert.That(exception, Is.TypeOf<ArgumentException>());
+        //}
+        // DeleteProductAsync
+        [Test]
+        public async Task DeleteProductAsync_ValidId_NotNull()
+        {
+            // Arrange
+            int productIndex = 0;
+            var product = GetProductsSeedData()[productIndex];
+            int testId = product.ProductId;
+            // Act
+            var result = await _productService.DeleteProductAsync(testId);
+            // Assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.ProductId, Is.EqualTo(testId));
+        }
+        [Test]
+        public async Task DeleteProductAsync_ValidNonExistingId_Null()
+        {
+            // Arrange
+            int productIndex = 0;
+            var product = GetProductsSeedData()[productIndex];
+            int testId = 6;
+            // Act
+            var result = await _productService.DeleteProductAsync(testId);
+            // Assert
+            Assert.That(result, Is.Null);
+        }
+        [Test]
+        public void DeleteProductAsync_InvalidId_Throw()
+        {
+            // Arrange
+            int productIndex = 0;
+            var product = GetProductsSeedData()[productIndex];
+            int testId = 0;
+            // Act
+            var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
+                await _productService.DeleteProductAsync(testId));
+
+            Assert.That(exception, Is.TypeOf<ArgumentException>());
+        }
     }
 }
