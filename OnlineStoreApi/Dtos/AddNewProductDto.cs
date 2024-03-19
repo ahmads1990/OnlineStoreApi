@@ -1,8 +1,7 @@
-﻿namespace OnlineStoreApi.Models.Dtos
+﻿namespace OnlineStoreApi.Dtos
 {
-    public class UpdateProductDto
+    public class AddNewProductDto
     {
-        public int ProductId { get; set; }
         public string Name { get; set; }
         public string Category { get; set; }
         public IFormFile ProductImage { get; set; }
