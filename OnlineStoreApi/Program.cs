@@ -70,7 +70,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 // DI
-//builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 
 var app = builder.Build();
