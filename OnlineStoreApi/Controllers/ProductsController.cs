@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using OnlineStoreApi.Dtos;
@@ -50,14 +51,15 @@ namespace OnlineStoreApi.Controllers
             try
             {
                 // Map dto to model and add user(seller) id into the new model
-                var newProduct = new Product
-                {
-                    Name = addNewProductDto.Name,
-                    Price = addNewProductDto.Price,
-                    MinimumQuantity = addNewProductDto.MinimumQuantity,
-                    Category = addNewProductDto.Category,
-                    DiscountRate = addNewProductDto.DiscountRate,
-                };
+                var newProduct = addNewProductDto.Adapt<Product>();
+                //var newProduct = new Product
+                //{
+                //    Name = addNewProductDto.Name,
+                //    Price = addNewProductDto.Price,
+                //    MinimumQuantity = addNewProductDto.MinimumQuantity,
+                //    Category = addNewProductDto.Category,
+                //    DiscountRate = addNewProductDto.DiscountRate,
+                //};
 
                 // Save product image
                 if (addNewProductDto.ProductImage != null && addNewProductDto.ProductImage.Length > 0)
@@ -89,14 +91,15 @@ namespace OnlineStoreApi.Controllers
         {
             try
             {
-                var updatedProduct = new Product
-                {
-                    Name = updateProductDto.Name,
-                    Price = updateProductDto.Price,
-                    MinimumQuantity = updateProductDto.MinimumQuantity,
-                    Category = updateProductDto.Category,
-                    DiscountRate = updateProductDto.DiscountRate,
-                };
+                var updatedProduct = updateProductDto.Adapt<Product>();
+                //var updatedProduct = new Product
+                //{
+                //    Name = updateProductDto.Name,
+                //    Price = updateProductDto.Price,
+                //    MinimumQuantity = updateProductDto.MinimumQuantity,
+                //    Category = updateProductDto.Category,
+                //    DiscountRate = updateProductDto.DiscountRate,
+                //};
                 var response = await _productService.UpdateProductAsync(updatedProduct);
                 if (response is null)
                 {
