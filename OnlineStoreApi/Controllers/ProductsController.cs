@@ -57,7 +57,21 @@ namespace OnlineStoreApi.Controllers
                     Category = addNewProductDto.Category,
                     DiscountRate = addNewProductDto.DiscountRate,
                 };
-                // Todo add image func
+
+                // Save product image
+                if (addNewProductDto.ProductImage != null && addNewProductDto.ProductImage.Length > 0)
+                {
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(addNewProductDto.ProductImage.FileName);
+                    var filePath = Path.Combine("wwwroot/images", fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await addNewProductDto.ProductImage.CopyToAsync(stream);
+                    }
+                    // Store relative path to image
+                    newProduct.ProductImagePath = "/images/" + fileName; 
+                }
+
                 var response = await _productService.AddNewProduct(newProduct);
                 _logger.LogInformation($"New product added successfully");
                 return Ok(response);
