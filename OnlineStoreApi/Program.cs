@@ -1,3 +1,4 @@
+using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
@@ -7,9 +8,14 @@ using OnlineStoreApi;
 using OnlineStoreApi.Models;
 using OnlineStoreApi.Services;
 using Serilog;
+using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Mapster
+// Tell Mapster to scan this assambly searching for the Mapster.IRegister classes and execute them
+TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetExecutingAssembly());
 
 // Add services to the container.
 builder.Services.AddControllers();
