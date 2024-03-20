@@ -34,5 +34,19 @@ namespace OnlineStoreApi.Controllers
             //Todo send confirmation mail
             return Ok(result);
         }
+        [HttpPost("Refresh")]
+        public async Task<IActionResult> RefreshUserTokenAsync(RefreshTokenDto refreshTokenDto)
+        {
+            try
+            {
+                var result = await _userService.RefreshUserTokenAsync(refreshTokenDto.AccessToken, refreshTokenDto.RefreshToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+                throw;
+            }
+        }
     }
 }
