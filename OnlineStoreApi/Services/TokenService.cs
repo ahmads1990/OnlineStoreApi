@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -11,11 +12,11 @@ namespace OnlineStoreApi.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtConfig _jwtConfig;
         private readonly TokenValidationParameters _tokenValidationParameters;
-        public TokenService(UserManager<ApplicationUser> userManager, JwtConfig jwtConfig, TokenValidationParameters tokenValidationParameters)
+        public TokenService(UserManager<ApplicationUser> userManager, IOptions<JwtConfig> jwtConfig, IOptions<TokenValidationParameters> tokenValidationParameters)
         {
             _userManager = userManager;
-            _jwtConfig = jwtConfig;
-            _tokenValidationParameters = tokenValidationParameters;
+            _jwtConfig = jwtConfig.Value;
+            _tokenValidationParameters = tokenValidationParameters.Value;
         }
         public async Task<TokenModel> CreateJwtTokenAsync(ApplicationUser user)
         {
