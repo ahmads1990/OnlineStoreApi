@@ -4,7 +4,7 @@ namespace OnlineStoreApi.Services.Interfaces
 {
     public interface ITokenService
     {
-        Task<JwtSecurityToken> CreateJwtTokenAsync(ApplicationUser user);
-        Task<AuthModel> RefreshAccessTokenAsync(string refreshToken);
+        Task<TokenModel> CreateJwtTokenAsync(ApplicationUser user);
+        Task<TokenModel> RefreshAccessTokenAsync(string accessToken, string refreshToken);
     }
 }

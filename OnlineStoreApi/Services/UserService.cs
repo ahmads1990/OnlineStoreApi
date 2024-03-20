@@ -1,4 +1,5 @@
 ﻿
+using Azure.Core;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,11 +12,12 @@ namespace OnlineStoreApi.Services
     public class UserService : IUserService
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly JwtConfig _jwtConfig;
-        public UserService(UserManager<ApplicationUser> userManager, JwtConfig jwtConfig)
+        private readonly ITokenService _tokenService;
+
+        public UserService(UserManager<ApplicationUser> userManager, ITokenService tokenService)
         {
             _userManager = userManager;
-            _jwtConfig = jwtConfig;
+            _tokenService = tokenService;
         }
         public async Task<AuthModel> RegisterUserAsync(RegisterModel registerModel)
         {
@@ -45,18 +47,19 @@ namespace OnlineStoreApi.Services
                 return new AuthModel { Message = errorMessage };
             }
             // user creation went ok then create token and send it back
-            var jwtToken = await CreateJwtTokenAsync(user);
+            var jwtToken = await _tokenService.CreateJwtTokenAsync(user);
 
             return new AuthModel
             {
                 IsAuthenticated = true,
                 Username = user.UserName,
                 Email = user.Email,
-                Token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
-                ExpiresOn = jwtToken.ValidTo
+                AccessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken.AccessToken),
+                AccessExpiresOn = jwtToken.AccessToken.ValidTo,
+                RefreshToken = new JwtSecurityTokenHandler().WriteToken(jwtToken.AccessToken),
+                RefreshExpiresOn = jwtToken.RefreshToken.ValidTo,
             };
         }
-        
         public async Task<AuthModel> LoginUserAsync(LoginModel loginModel)
         {
             AuthModel authModel = new AuthModel();
@@ -68,48 +71,23 @@ namespace OnlineStoreApi.Services
                 return authModel;
             }
 
-            var jwtToken = await CreateJwtTokenAsync(user);
+            var jwtToken = await _tokenService.CreateJwtTokenAsync(user);
             var claim = await _userManager.GetClaimsAsync(user);
 
             authModel.IsAuthenticated = true;
             authModel.Username = user.UserName;
             authModel.Email = user.Email;
             authModel.UserTypeClaim = claim.First().Type;
-            authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
-            authModel.ExpiresOn = jwtToken.ValidTo;
+            authModel.AccessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken.AccessToken);
+            authModel.AccessExpiresOn = jwtToken.AccessToken.ValidTo;
+            authModel.RefreshToken = new JwtSecurityTokenHandler().WriteToken(jwtToken.RefreshToken);
+            authModel.RefreshExpiresOn = jwtToken.RefreshToken.ValidTo;
 
             return authModel;
         }
-        private async Task<JwtSecurityToken> CreateJwtTokenAsync(ApplicationUser user)
+        public async Task<TokenModel> RefreshUserTokenAsync(string accessToken, string refreshToken)
         {
-            if (user is null) return null;
-            // get user claims
-            var userClaims = await _userManager.GetClaimsAsync(user);
-            // create jwt claims
-            var jwtClaims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("uid", user.Id)
-            };
-            // merge both claims lists and jwtClaims to allClaims
-            var allClaims = jwtClaims.Union(userClaims);
-
-            // specify the signing key and algorithm
-            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.Key));
-            var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
-
-            // finally create the token
-            var jwtSecurityToken = new JwtSecurityToken(
-                issuer: _jwtConfig.Issuer,
-                audience: _jwtConfig.Audience,
-                claims: allClaims,
-                expires: DateTime.Now.AddHours(_jwtConfig.DurationInHours),
-                signingCredentials: signingCredentials
-                );
-
-            return jwtSecurityToken;
+            return await _tokenService.RefreshAccessTokenAsync(accessToken, refreshToken);
         }
     }
 }

@@ -4,5 +4,6 @@
     {
         Task<AuthModel> RegisterUserAsync(RegisterModel registerModel);
         Task<AuthModel> LoginUserAsync(LoginModel loginModel);
+        Task<TokenModel> RefreshUserTokenAsync(TokenModel token);
     }
 }
