@@ -8,7 +8,7 @@ namespace OnlineStoreApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize]
+    //[Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly ILogger<ProductsController> _logger;

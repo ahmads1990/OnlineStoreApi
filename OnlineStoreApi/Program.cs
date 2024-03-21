@@ -94,6 +94,8 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseCors("AllowAllOrigins");
+
 // Auto migrations
 using (var scope = app.Services.CreateScope())
 {
@@ -112,6 +114,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStaticFiles();
 
 app.MapControllers();
 
