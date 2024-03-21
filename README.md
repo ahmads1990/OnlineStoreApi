@@ -7,7 +7,7 @@ This project is a online store rest api to support ecommerce website backend, Us
     -   Tested products service ensuring correct logic and exception handling
     -   Tested user controller endpoints for correct routes response
     -   Todo: Test products controller for correct endpoints routes responses
-
+- The front code can be found [here](https://github.com/ahmads1990/AngularOnlineStore) 
 ## Technologies
 
 <a href="https://skillicons.dev">
